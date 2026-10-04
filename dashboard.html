@@ -1,0 +1,292 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Herz Friend Connector</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --success: #10b981;
+            --text-main: #0e1520;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+        /* }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-image: url('file///C:/Users/Harsh/OneDrive/Pictures/Screenshots/Screenshot 2026-10-04 224604.png');
+            margin: 0; 
+            padding: 20px; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: background-image 1s ease-in-out;
+        } */
+         body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    /* Fixed the file:/// protocol and encoded the spaces */
+    
+    background-image: url('https://img.magnific.com/free-psd/collage-grid-set-text-effect_23-2151945450.jpg');
+    margin: 0; 
+    padding: 20px; 
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: background-image 1s ease-in-out;
+}
+
+
+        .bg-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(2, 17, 32, 0.82);
+            z-index: -1;
+        }
+
+        header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            background: rgba(174, 16, 129, 0.95);
+            background-image: url('https://www.google.com/imgres?q=grid%20made%20with%20multiple%20photos&imgurl=https%3A%2F%2Fwww.mockofun.com%2Fwp-content%2Fuploads%2F2020%2F05%2Fphoto-grids.jpg&imgrefurl=https%3A%2F%2Fwww.mockofun.com%2Ftutorials%2Fadd-grid-to-photo%2F&docid=dEfp3AmjmhwPJM&tbnid=KLN4WEjg0VvIUM&vet=12ahUKEwie5sa35KCXAxXVT2wGHeijCncQnPAOegUIqwIQAA..i&w=800&h=509&hcb=2&ved=2ahUKEwie5sa35KCXAxXVT2wGHeijCncQnPAOegUIqwIQAA'); padding: 15px 25px; 
+            border-radius: 12px; margin-bottom: 20px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+        }
+        header h2 { margin: 0; color: var(--primary); }
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 20px; flex: 1; }
+        .box { 
+            background: rgba(255, 255, 255, 0.95); padding: 20px; border-radius: 12px; 
+            height: 520px; display: flex; flex-direction: column; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+        }
+        .box h3 { margin-top: 0; font-size: 16px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; }
+        
+        .list-container { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-top: 5px; }
+        .user-card {
+            background: white; border: 1px solid var(--border-color); padding: 10px 14px;
+            border-radius: 8px; display: flex; justify-content: space-between; align-items: center;
+        }
+        
+        .btn { background: var(--primary); color: rgb(151, 84, 84); border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; }
+        .btn:hover { background: var(--primary-hover); }
+        .btn.connected { background-color: var(--success); cursor: default; }
+
+        .chat-history { flex: 1; overflow-y: auto; border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; margin-bottom: 10px; background: #fafafa; }
+        .msg { margin-bottom: 8px; padding: 8px 12px; border-radius: 8px; max-width: 75%; font-size: 14px; word-break: break-word; }
+        .me { background: #e0e7ff; margin-left: auto; text-align: right; }
+        .them { background: #f1f5f9; }
+        .chat-input { display: flex; gap: 10px; }
+        .chat-input input { flex: 1; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); outline: none; }
+    </style>
+</head>
+<body>
+
+<div class="bg-overlay"></div>
+
+<header>
+    <h2>🌐 Welcome, <span id="currentUserName">...</span>!</h2>
+    <button class="btn" style="background:#ef4444" onclick="logout()">Logout</button>
+</header>
+
+<div class="grid">
+    <div class="box">
+        <h3>Recommended for You</h3>
+        <div class="list-container" id="recsList">
+            <div style="text-align:center; color: var(--text-muted); margin-top:20px;">Loading recommendations...</div>
+        </div>
+    </div>
+
+    <div class="box">
+        <h3>Your Connected Friends</h3>
+        <div class="list-container" id="friendsList">
+            <div style="text-align:center; color: var(--text-muted); margin-top:20px;">No connected friends yet.</div>
+        </div>
+    </div>
+
+    <div class="box">
+        <h3 id="chatTitle">Select a friend to chat</h3>
+        <div class="chat-history" id="chatBox">
+            <div style="text-align:center; color: var(--text-muted); margin-top:40px;">Select a connected friend to start chatting.</div>
+        </div>
+        <div class="chat-input" id="inputContainer" style="display:none;">
+            <input type="text" id="msgInput" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
+            <button class="btn" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const backgroundImages = [
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSRsgOqGTGaVMM2fbZyXLnWi1e31kpsChVipT0al90BQ&s=10",
+        "https://images.squarespace-cdn.com/content/v1/6018c611956c02769138feca/1628114551726-J7VPF7C4PYW6S0EEAWZP/unsplash-image-Cecb0_8Hx-o.jpg",
+        "https://egwepmgkvpzdshiqdlml.supabase.co/storage/v1/object/public/blog/how-to-make-creative-friends.jpg",
+        "https://lookaside.instagram.com/seo/google_widget/crawler/?media_id=3952572064883410288"
+    ];
+
+    let currentBgIndex = 0;
+    function changeBackground() {
+        currentBgIndex = (currentBgIndex + 1) % backgroundImages.length;
+        document.body.style.backgroundImage = `url('${backgroundImages[currentBgIndex]}')`;
+    }
+    document.body.style.backgroundImage = `url('${backgroundImages[0]}')`;
+    setInterval(changeBackground, 15000);
+
+    let activeFriendId = null;
+    let currentUserId = null;
+
+    async function init() {
+        const userRes = await fetch('/api/me');
+        if (userRes.status === 401) { 
+            window.location.href = '/'; 
+            return; 
+        }
+        const userData = await userRes.json();
+        currentUserId = userData.user_id;
+        document.getElementById('currentUserName').textContent = userData.username;
+
+        loadRecommendations();
+        loadFriends();
+    }
+
+    async function loadRecommendations() {
+        try {
+            const res = await fetch('/api/recommendations');
+            const data = await res.json();
+            const container = document.getElementById('recsList');
+            
+            if (data.status === 'success') {
+                if (data.recommendations.length === 0) {
+                    container.innerHTML = '<div style="text-align:center; color: var(--text-muted); padding:20px;">No new recommendations found.</div>';
+                    return;
+                }
+                container.innerHTML = data.recommendations.map(r => `
+                    <div class="user-card">
+                        <span><strong>${r.username}</strong></span>
+                        <button class="btn" onclick="connect(${r.id}, this)">Connect</button>
+                    </div>
+                `).join('');
+            }
+        } catch (err) {
+            console.error('Failed to load recommendations', err);
+        }
+    }
+
+    async function connect(friendId, button) {
+        try {
+            const res = await fetch('/api/connect', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ friend_id: friendId })
+            });
+            const data = await res.json();
+            if (data.status === 'success') {
+                button.textContent = 'Requested ✓';
+                button.classList.add('connected');
+                button.disabled = true;
+                loadRecommendations();
+                loadFriends();
+            }
+        } catch (err) {
+            console.error('Failed to connect', err);
+        }
+    }
+
+    async function loadFriends() {
+        try {
+            const res = await fetch('/api/friends');
+            const data = await res.json();
+            const container = document.getElementById('friendsList');
+            
+            if (data.status === 'success') {
+                if (data.friends.length === 0) {
+                    container.innerHTML = '<div style="text-align:center; color: var(--text-muted); padding:20px;">No connected friends yet.</div>';
+                    return;
+                }
+                container.innerHTML = data.friends.map(f => `
+                    <div class="user-card">
+                        <span><strong>${f.username}</strong></span>
+                        <button class="btn" onclick="openChat(${f.id}, '${f.username}')">Chat</button>
+                    </div>
+                `).join('');
+            }
+        } catch (err) {
+            console.error('Failed to load friends', err);
+        }
+    }
+
+    function openChat(friendId, friendName) {
+        activeFriendId = friendId;
+        document.getElementById('chatTitle').textContent = `Chat with ${friendName}`;
+        document.getElementById('inputContainer').style.display = 'flex';
+        loadMessages();
+    }
+
+    async function loadMessages() {
+        if (!activeFriendId) return;
+        try {
+            const res = await fetch(`/api/messages/${activeFriendId}`);
+            const data = await res.json();
+            const box = document.getElementById('chatBox');
+            
+            if (data.status === 'success') {
+                if (data.messages.length === 0) {
+                    box.innerHTML = '<div style="text-align:center; color: var(--text-muted); margin-top:30px;">Say hello to start the conversation!</div>';
+                    return;
+                }
+                box.innerHTML = data.messages.map(m => `
+                    <div class="msg ${m.sender_id === currentUserId ? 'me' : 'them'}">
+                        ${m.message}
+                    </div>
+                `).join('');
+                box.scrollTop = box.scrollHeight;
+            }
+        } catch (err) {
+            console.error('Failed to fetch messages', err);
+        }
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('msgInput');
+        const messageText = input.value.trim();
+        if (!messageText || !activeFriendId) return;
+
+        try {
+            await fetch('/api/messages/send', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ receiver_id: activeFriendId, message: messageText })
+            });
+            input.value = '';
+            loadMessages();
+        } catch (err) {
+            console.error('Failed to send message', err);
+        }
+    }
+
+    function handleKeyPress(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    }
+
+    async function logout() {
+        await fetch('/api/logout', { method: 'POST' });
+        window.location.href = '/';
+    }
+
+    init();
+    setInterval(loadMessages, 3000);
+</script>
+</body>
+</html>

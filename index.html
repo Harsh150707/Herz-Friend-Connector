@@ -1,0 +1,202 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Herz Friend Connector</title>
+    <style>
+        :root {
+            --primary: #0b0a11;
+            --primary-hover: #4338ca;
+            --bg-color: rgb(20, 20, 85);
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        /* body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-color);
+            background-color: rgb(20, 20, 85); 
+            background-image: url('Screenshot 2026-10-04 224604.png');
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        } */
+
+         body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: rgb(20, 20, 85); 
+    background-image: url('https://images.unsplash.com/photo-1579546929518-9e396f3cc809');
+    background-size: cover;          /* Ensures the image covers the whole screen */
+    background-position: center;     /* Centers the image */
+    background-repeat: no-repeat;    /* Prevents the image from tiling */
+    color: var(--text-main);
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+        .dashboard-container {
+            width: 100%;
+            max-width: 450px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+
+        header h2 { margin-top: 0; color: var(--primary); font-size: 24px; text-align: center; }
+        header p { color: var(--text-muted); font-size: 14px; margin-bottom: 20px; }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        input[type="text"], input[type="email"] {
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            outline: none;
+        }
+
+        .interests-options {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 5px;
+        }
+
+        .interests-options label {
+            text-transform: none;
+            font-weight: normal;
+            font-size: 14px;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .submit-btn:hover { background-color: var(--primary-hover); }
+
+        .toggle {
+            margin-top: 15px;
+            text-align: center;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+       
+    </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+    <header>
+        <h2>    🚀🔥❤️Herz❤️🔥🚀</h2>
+        <p id="subTitle">Friend Recommendation Platform - Sign Up</p>
+    </header>
+
+    <form id="authForm" onsubmit="handleAuth(event)">
+        <div class="form-group" id="usernameGroup">
+            <label>Username</label>
+            <input type="text" id="regUsername" placeholder="e.g. YashKarbhal">
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="regEmail" placeholder="yash@example.com" required>
+        </div>
+        <div class="form-group" id="interestsGroup">
+            <label>Select Interests (Day-1 Matching)</label>
+            <div class="interests-options">
+                <label><input type="checkbox" value="Coding"> Coding</label>
+                <label><input type="checkbox" value="Gaming"> Gaming</label>
+                <label><input type="checkbox" value="Music"> Music</label>
+                <label><input type="checkbox" value="Reading"> Reading</label>
+            </div>
+        </div>
+        <button type="submit" class="submit-btn" id="submitBtn">Sign Up & Enter</button>
+    </form>
+    
+    <div class="toggle" onclick="toggleMode()" id="toggleText">Already have an account? Login</div>
+</div>
+
+<script>
+    let isLogin = false;
+
+    function toggleMode() {
+        isLogin = !isLogin;
+        document.getElementById('subTitle').textContent = isLogin ? 'Friend Recommendation Platform - Login' : 'Friend Recommendation Platform - Sign Up';
+        document.getElementById('usernameGroup').style.display = isLogin ? 'none' : 'flex';
+        document.getElementById('interestsGroup').style.display = isLogin ? 'none' : 'block';
+        document.getElementById('submitBtn').textContent = isLogin ? 'Login' : 'Sign Up & Enter';
+        document.getElementById('toggleText').textContent = isLogin ? "Don't have an account? Sign Up" : "Already have an account? Login";
+    }
+
+    async function handleAuth(event) {
+        event.preventDefault();
+        
+        const email = document.getElementById('regEmail').value;
+        const endpoint = isLogin ? '/api/login' : '/api/register';
+        
+        let body = { email };
+        if (!isLogin) {
+            body.username = document.getElementById('regUsername').value;
+            body.interests = Array.from(document.querySelectorAll('.interests-options input[type="checkbox"]:checked')).map(cb => cb.value);
+        }
+
+        try {
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                window.location.href = '/dashboard';
+            } else {
+                alert(`Error: ${data.message}`);
+            }
+        } catch (error) {
+            console.error('Authentication failed:', error);
+            alert('Failed to connect to the server.');
+        }
+    }
+</script>
+
+</body>
+</html>
